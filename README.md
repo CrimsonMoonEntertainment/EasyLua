@@ -149,9 +149,8 @@ Note that in Objective-C, the method name should be "op_*your_operator*:".
 
 License
 =======
-The MIT License (MIT)
-
-Copyright (c) 2015 Toru Hisai
+Copyright for portions of project EasyLua held by Toru Hisai, 2015
+All Other Copyright for EasyLua held by Crimson Moon Entertainment LLC, 2015
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -173,4 +172,5 @@ THE SOFTWARE.
 
 Author
 ======
-Toru Hisai toru@torus.jp @torus
+Maintainer: David Holtkamp david@crimson-moon.com
+Original Author: Toru Hisai toru@torus.jp @torus 
