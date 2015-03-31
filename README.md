@@ -8,19 +8,6 @@ Our goal is to make an exceptionally easy to use and bridge which requires no ex
 This is still testing and more details will be listed soon
 
 
-Adding Operators
-----------------
-
-Create a category on the LuaBrige class and implement your operators in folloing signature:
-
-- (void)op_your_operator:(NSMutableArray*)stack
-
-Then from Lua script call the operator like this:
-
-objc.operate(stack, "your_operator")
-
-Note that in Objective-C, the method name should be "op_*your_operator*:".
-
 License
 =======
 Copyright for portions of project EasyLua held by Toru Hisai, 2015
@@ -48,4 +35,5 @@ THE SOFTWARE.
 Author
 ======
 Maintainer: David Holtkamp david@crimson-moon.com
+
 Original Author: Toru Hisai toru@torus.jp @torus 
