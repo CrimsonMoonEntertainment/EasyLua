@@ -32,7 +32,8 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 -(bool)runLuaBundleFile:(NSString*)fileName
 {
     fileName = [fileName stringByReplacingOccurrencesOfString:@".lua" withString:@""];
-    NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"lua"];
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    NSString *path = [bundle pathForResource:fileName ofType:@"lua"];
     return [self runLuaFileAtPath:path];
 }
 

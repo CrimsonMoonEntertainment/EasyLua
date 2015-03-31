@@ -1,3 +1,4 @@
+--[[
 function AddBuyAllIfNeeded()
     -- First, we start out and see if we have any of the BuyAllGunPurchases
     collection_manager = bridge:wrap(class.iGunCollection)("sharediGunCollection")
@@ -15,7 +16,8 @@ function AddBuyAllIfNeeded()
     print("Aborting Split Test! - You Already Own it")
     return
 end
+]]
 
 print("Continuing Split Test ")
+bridge:wrap(class.ObjCTest)("returnFalse:", "Test")
 
-end

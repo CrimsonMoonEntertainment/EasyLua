@@ -58,8 +58,8 @@ int finalize_object(lua_State *L)
 
         lua_setglobal(L, "objc");
 #undef ADDMETHOD
-        
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"utils" ofType:@"lua"];
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString *path = [bundle pathForResource:@"utils" ofType:@"lua"];
         if (luaL_dofile(L, [path UTF8String])) {
             const char *err = lua_tostring(L, -1);
             NSLog(@"error while loading utils: %s", err);

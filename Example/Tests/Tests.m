@@ -22,7 +22,7 @@ describe(@"EasyLua Tests", ^{
     
     
     it(@"can run string", ^{
-        [[EasyLua sharedEasyLua] runLuaString:@"bridge = objc.context:create(); setmetatable(_G, {__index=objc}); bridge:wrap(class.ObjC-Test)(\"returnFalse:\", \"Test\")"];
+        [[EasyLua sharedEasyLua] runLuaBundleFile:@"LuaTest"];
     });
     
     it(@"can read", ^{
