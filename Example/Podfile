@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'EasyLua', :exclusive => true do
   pod "EasyLua", :path => "../"
-
+  pod 'lua'
   pod 'Specta'
   pod 'Expecta'
 end

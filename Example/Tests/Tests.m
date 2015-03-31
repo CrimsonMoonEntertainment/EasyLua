@@ -6,28 +6,22 @@
 //  Copyright (c) 2014 David Holtkamp. All rights reserved.
 //
 
-SpecBegin(InitialSpecs)
+#import "EasyLua.h"
 
-describe(@"these will fail", ^{
+SpecBegin(EasyLua)
 
-    it(@"can do maths", ^{
-        expect(1).to.equal(2);
-    });
 
-    it(@"can read", ^{
-        expect(@"number").to.equal(@"string");
+describe(@"EasyLua Tests", ^{
+    
+    
+    beforeAll(^
+    {
+        EasyLua* get_instance = [EasyLua sharedEasyLua];
+        expect(get_instance).notTo.equal(nil);
     });
     
-    it(@"will wait for 10 seconds and fail", ^{
-        waitUntil(^(DoneCallback done) {
-        
-        });
-    });
-});
-
-describe(@"these will pass", ^{
     
-    it(@"can do maths", ^{
+    it(@"can run string", ^{
         expect(1).beLessThan(23);
     });
     
@@ -35,11 +29,6 @@ describe(@"these will pass", ^{
         expect(@"team").toNot.contain(@"I");
     });
     
-    it(@"will wait and succeed", ^AsyncBlock {
-        waitUntil(^(DoneCallback done) {
-            done();
-        });
-    });
 });
 
 SpecEnd
