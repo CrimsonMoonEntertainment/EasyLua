@@ -1,1 +1,0 @@
-PODS_EASYLUA_EASYLUA_OTHER_LDFLAGS = -framework "Foundation"

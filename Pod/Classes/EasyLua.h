@@ -19,11 +19,10 @@
     lua_State *L;
 }
 
-// -(void)resetState;   // We need to add support for this in the LuaBridge
 -(bool)runLuaBundleFile:(NSString*)fileName;
--(bool)runFileAtPath:(NSString*)path;
+-(bool)runLuaFileAtPath:(NSString*)path;
 -(bool)runLuaString:(NSString*)string;
--(lua_State*)getCurrentState;
 
 +(EasyLua*)sharedEasyLua;
+
 @end

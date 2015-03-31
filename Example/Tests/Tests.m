@@ -13,16 +13,16 @@ SpecBegin(EasyLua)
 
 describe(@"EasyLua Tests", ^{
     
-    
     beforeAll(^
     {
         EasyLua* get_instance = [EasyLua sharedEasyLua];
         expect(get_instance).notTo.equal(nil);
+        NSLog(@"Test");
     });
     
     
     it(@"can run string", ^{
-        expect(1).beLessThan(23);
+        [[EasyLua sharedEasyLua] runLuaString:@"bridge = objc.context:create(); setmetatable(_G, {__index=objc}); bridge:wrap(class.ObjC-Test)(\"returnFalse:\", \"Test\")"];
     });
     
     it(@"can read", ^{

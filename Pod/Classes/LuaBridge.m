@@ -366,7 +366,7 @@ static void lua_exception_handler(NSException *exception)
             break;
         case 'B': // A C++ bool or a C99 _Bool
         {
-            CNVBUF(int);
+            CNVBUF(bool);
             [stack addObject:[NSNumber numberWithBool:x]];
         }
             break;

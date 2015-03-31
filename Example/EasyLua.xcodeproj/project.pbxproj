@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12E9C7521ACB2644000EAA0B /* LuaTest.lua in Resources */ = {isa = PBXBuildFile; fileRef = 12E9C7511ACB2644000EAA0B /* LuaTest.lua */; };
+		12E9C7551ACB2681000EAA0B /* ObjCTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 12E9C7541ACB2681000EAA0B /* ObjCTest.m */; };
 		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
 		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -16,6 +18,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12E9C7511ACB2644000EAA0B /* LuaTest.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LuaTest.lua; sourceTree = "<group>"; };
+		12E9C7531ACB2681000EAA0B /* ObjCTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjCTest.h; sourceTree = "<group>"; };
+		12E9C7541ACB2681000EAA0B /* ObjCTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjCTest.m; sourceTree = "<group>"; };
 		35B35AD4D3C211ED47A4C635 /* Pods-EasyLua.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EasyLua.release.xcconfig"; path = "Pods/Target Support Files/Pods-EasyLua/Pods-EasyLua.release.xcconfig"; sourceTree = "<group>"; };
 		492A9D17CCDC4606C3DC9BE5 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* EasyLua.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EasyLua.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +91,9 @@
 			children = (
 				6003F5BB195388D20070C39A /* Tests.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
+				12E9C7511ACB2644000EAA0B /* LuaTest.lua */,
+				12E9C7531ACB2681000EAA0B /* ObjCTest.h */,
+				12E9C7541ACB2681000EAA0B /* ObjCTest.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -180,6 +188,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */,
+				12E9C7521ACB2644000EAA0B /* LuaTest.lua in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* Tests.m in Sources */,
+				12E9C7551ACB2681000EAA0B /* ObjCTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

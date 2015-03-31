@@ -26,31 +26,17 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     return self;
 }
 
-#pragma mark - Public
-
--(void)resetState
-{
-/*  This no longer happens
-    if(L != NULL)
-    {
-        lua_close(L);
-    }  
-*/
-    L = [[LuaBridge instance] L];
-    luaL_openlibs(L); // load all the basic libraries into the interpreter
-    lua_settop(L, 0);
-    [self addBundlePathToLuaState];
-    [self runLuaBundleFile:@"objc-init"];
-}
+#pragma mark - Run Lua Code
 
 
 -(bool)runLuaBundleFile:(NSString*)fileName
 {
+    fileName = [fileName stringByReplacingOccurrencesOfString:@".lua" withString:@""];
     NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"lua"];
-    return [self runFileAtPath:path];
+    return [self runLuaFileAtPath:path];
 }
 
--(bool)runFileAtPath:(NSString*)path
+-(bool)runLuaFileAtPath:(NSString*)path
 {
     if (luaL_dofile(L, [path UTF8String]))
     {
@@ -80,6 +66,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     return true;
 }
 
+#pragma mark - Get Lua State
 
 -(lua_State*)getCurrentState
 {
@@ -102,6 +89,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     lua_pop(L, 1); // get rid of package table from top of stack
 }
 
+-(void)resetState
+{
+    L = [[LuaBridge instance] L];
+    luaL_openlibs(L); // load all the basic libraries into the interpreter
+    lua_settop(L, 0);
+    [self addBundlePathToLuaState];
+    [self runLuaBundleFile:@"objc-init"];
+}
 
 
 

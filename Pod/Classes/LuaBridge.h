@@ -28,11 +28,14 @@ extern "C" {
 - (void)operate:(NSString*)opname onStack:(NSMutableArray*)stack;
 - (void)op_call:(NSMutableArray*)stack;
 - (void)op_cgrectmake:(NSMutableArray*)stack;
+
 @end
 
 @interface LuaObjectReference : NSObject
+
 @property int ref;
 @property lua_State *L;
+
 @end
 
 void luabridge_push_object(lua_State *L, id obj);
