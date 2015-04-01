@@ -20,6 +20,10 @@
     return false;
 }
 
++ (void)printMyString:(NSString*)stringIn
+{
+    NSLog(@"My String: %@", stringIn);
+}
 
 
 @end

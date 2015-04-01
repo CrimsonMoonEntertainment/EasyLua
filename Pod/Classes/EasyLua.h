@@ -14,15 +14,16 @@
 #include "lauxlib.h"
 #include "LuaBridge.h"
 
+
 @interface EasyLua : NSObject
 {
-    lua_State *L;
+	lua_State *L;
 }
 
--(bool)runLuaBundleFile:(NSString*)fileName;
--(bool)runLuaFileAtPath:(NSString*)path;
--(bool)runLuaString:(NSString*)string;
+- (bool)runLuaBundleFile:(NSString *)fileName;
+- (bool)runLuaFileAtPath:(NSString *)path;
+- (bool)runLuaString:(NSString *)string;
 
-+(EasyLua*)sharedEasyLua;
++ (EasyLua *)sharedEasyLua;
 
 @end
