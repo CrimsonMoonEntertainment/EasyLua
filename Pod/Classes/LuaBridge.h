@@ -20,15 +20,14 @@ extern "C" {
 
 
 @interface LuaBridge : NSObject
-{
-	lua_State *L;
-}
 
-@property(readonly) lua_State *L;
-
+#pragma mark - Initialization
 + (LuaBridge *)instance;
-- (void)pushObject:(id)obj;
-- (void)dostring:(NSString *)stmt;
+
+#pragma mark - Fetching State
+- (lua_State*)getLuaState;
+
+#pragma mark - Operation Stack (Lua Method Calling)
 - (void)operate:(NSString *)opname onStack:(NSMutableArray *)stack;
 - (void)op_call:(NSMutableArray *)stack;
 - (void)op_cgrectmake:(NSMutableArray *)stack;
@@ -36,12 +35,3 @@ extern "C" {
 @end
 
 
-@interface LuaObjectReference : NSObject
-
-@property int ref;
-@property lua_State *L;
-
-@end
-
-
-void luabridge_push_object(lua_State *L, id obj);

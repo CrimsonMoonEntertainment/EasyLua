@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  EasyLua: 9c365846c66b875ed6e940ca0ed6652f8dd38eeb
+  EasyLua: 653cd127036ca3059778d16fae9b2f928fb78af3
   Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
   lua: f5dfecaee3325734ef8dd47ec238797ed28b4bf5
   Specta: a353759f073ffcc0a365b782fe4aaeac064c03c6

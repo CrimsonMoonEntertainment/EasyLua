@@ -1,6 +1,5 @@
 //
 //  CMLuaManager.h
-//  CrimsonWars
 //
 //  Created by David Holtkamp on 8/13/14.
 //  Copyright (c) 2014 Crimson Moon Entertainment LLC. All rights reserved.
@@ -16,14 +15,20 @@
 
 
 @interface EasyLua : NSObject
-{
-	lua_State *L;
-}
 
++ (EasyLua *)sharedEasyLua;
+
+#pragma mark - Load and Run Lua Code
 - (bool)runLuaBundleFile:(NSString *)fileName;
 - (bool)runLuaFileAtPath:(NSString *)path;
 - (bool)runLuaString:(NSString *)string;
 
-+ (EasyLua *)sharedEasyLua;
+#pragma mark - Call Loaded Function
+- (void)callVoidReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // 0 Return Values
+- (double)callNumberReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (bool)callBoolReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // Returns 1 Bool
+- (NSString *)callStringReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;   // Returns 1 String
+//- (id)callObjectReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // Returns 1 NSObject
+
 
 @end

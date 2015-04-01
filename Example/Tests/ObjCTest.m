@@ -25,5 +25,24 @@
     NSLog(@"My String: %@", stringIn);
 }
 
+- (NSNumber*)memberMethodWithNumber:(NSNumber*)number
+{
+    int val = [number intValue];
+    NSLog(@"Number is: %i", val);
+    return @(val);
+}
+
+- (int)memberMethodWithInt:(int)number
+{
+    NSLog(@"Number is: %i", number);
+    return number;
+}
+
+- (ObjCTest*)memberMethodWithPointer:(ObjCTest*)testPointer
+{
+    [testPointer memberMethodWithInt:43];
+    return testPointer;
+}
+
 
 @end

@@ -8,8 +8,11 @@
 #import "CMSynthesizeSingleton.h"
 #import "EasyLua.h"
 
-
 @implementation EasyLua
+{
+    lua_State *L;
+    LuaBridge *Bridge;
+}
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 
@@ -67,35 +70,117 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 	return true;
 }
 
-#pragma mark - Get Lua State
 
-- (lua_State *)getCurrentState
+#pragma mark - Call Loaded Function
+- (void)callVoidReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
 {
-	return L;
+    lua_getglobal(L, [functionName UTF8String]);
+    for(id item in arguments)
+    {
+        [self pushValueToLua:item];
+    }
+    
+    if(lua_pcall(L, (int)[arguments count], 0, 0) != LUA_OK)
+    {
+        NSLog(@"Error running specified lua function %@", functionName);
+    }
 }
+
+
+- (double)callNumberReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+{
+    lua_getglobal(L, [functionName UTF8String]);
+    for(id item in arguments)
+    {
+        [self pushValueToLua:item];
+    }
+    
+    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
+    {
+        NSLog(@"Error running specified lua function %@", functionName);
+    }
+    int is_num;
+    double ret_value = lua_tonumberx(L, -1, &is_num);
+    
+    if(is_num == false)
+    {
+        NSLog(@"Function %@ called was not returning a number", functionName);
+    }
+    
+    lua_pop(L, 1);
+    return ret_value;
+    
+}
+
+- (bool)callBoolReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+{
+    lua_getglobal(L, [functionName UTF8String]);
+    for(id item in arguments)
+    {
+        [self pushValueToLua:item];
+    }
+    
+    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
+    {
+        NSLog(@"Error running specified lua function %@", functionName);
+    }
+
+    bool ret_value = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return ret_value;
+}
+
+- (NSString *)callStringReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+{
+    lua_getglobal(L, [functionName UTF8String]);
+    for(id item in arguments)
+    {
+        [self pushValueToLua:item];
+    }
+    
+    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
+    {
+        NSLog(@"Error running specified lua function %@", functionName);
+    }
+    
+    NSString* string = [NSString stringWithUTF8String:lua_tostring(L, -1)];
+    lua_pop(L, 1);
+    return string;
+}
+
+//- (id)callObjectReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+
 
 #pragma mark - Private
 
-- (void)addBundlePathToLuaState
+- (void)pushValueToLua:(id)value
 {
-	lua_getglobal(L, "package");
-	lua_getfield(L, -1, "path"); // get field "path" from table at top of stack (-1)
-
-	const char *current_path_const = lua_tostring(L, -1); // grab path string from top of stack
-	NSString *current_path = [NSString stringWithFormat:@"%s;%@/?.lua", current_path_const, [[NSBundle mainBundle] resourcePath]];
-
-	lua_pop(L, 1); // get rid of the string on the stack we just pushed on line 5
-	lua_pushstring(L, [current_path UTF8String]); // push the new one
-	lua_setfield(L, -2, "path"); // set the field "path" in table at -2 with value at top of stack
-	lua_pop(L, 1); // get rid of package table from top of stack
+    if([value isKindOfClass:[NSString class]])
+    {
+        lua_pushstring(L, [value UTF8String]);
+    }
+    else if([value isKindOfClass:[NSNumber class]])
+    {
+        if(strcmp([value objCType], [@"c" UTF8String]) == 0)
+        {
+            lua_pushboolean(L, [value intValue]);
+        }
+        else
+        {
+            lua_pushnumber(L, [value doubleValue]);
+        }
+    }
+    else
+    {
+        NSLog(@"Put an unsupported type in the argment array for a lua function call");
+    }
 }
+
 
 - (void)resetState
 {
-	L = [[LuaBridge instance] L];
-	luaL_openlibs(L); // load all the basic libraries into the interpreter
-	lua_settop(L, 0);
-	[self addBundlePathToLuaState];
+    Bridge = [LuaBridge instance];
+	L = [Bridge getLuaState];
 }
 
 

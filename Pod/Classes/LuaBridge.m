@@ -9,32 +9,35 @@
 #import <objc/runtime.h>
 
 #import "LuaBridge.h"
-
 #import "lualib.h"
 #import "lauxlib.h"
+#import "LuaObjectReference.h"
+#import "LuaBridgedFunctions.h"
 
-#import "LuaBridgeInternal.h"
+
+#define ADDMETHOD(name) \
+(lua_pushstring(L, #name), \
+lua_pushcfunction(L, luafunc_ ## name), \
+lua_settable(L, -3))
+
+#define CNVBUF(type) type x = *(type*)buffer
 
 static int gc_metatable_ref;
 
 
-// Looks like this isn't doing anything? I'm guessing this is left around from pre-ARC
-int finalize_object(lua_State *L)
-{
-	/*void *p = */lua_touserdata(L, 1);
-	//  void **ptr = (void **)p;
-	//    id obj = (__bridge_transfer id)*ptr;
-	//    NSLog(@"%s: releasing %@", __PRETTY_FUNCTION__, obj);
-	//    CFBridgingRelease(*ptr);
-	//    NSLog(@"%s: releasing %@ retainCount = %d", __PRETTY_FUNCTION__, obj, [obj retainCount]);
+#pragma mark - Bridged C Functions
 
-	return 0;
-}
+
+
+
 
 
 @implementation LuaBridge
+{
+    lua_State *L;
+}
 
-@synthesize L;
+#pragma mark - Initalization
 
 - (id)init
 {
@@ -45,11 +48,6 @@ int finalize_object(lua_State *L)
 		luaL_openlibs(L);
 		lua_newtable(L);
 
-#define ADDMETHOD(name) \
-    (lua_pushstring(L, #name), \
-     lua_pushcfunction(L, luafunc_ ## name), \
-     lua_settable(L, -3))
-
 		ADDMETHOD(hoge);
 		ADDMETHOD(newstack);
 		ADDMETHOD(push);
@@ -59,8 +57,6 @@ int finalize_object(lua_State *L)
 		ADDMETHOD(getclass);
 		ADDMETHOD(extract);
 
-#undef ADDMETHOD
-        
 		lua_setglobal(L, "objc");
 
 		NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -81,31 +77,25 @@ int finalize_object(lua_State *L)
 	{
 		stat = [[LuaBridge alloc] init];
 
-		lua_State *L = stat.L;
+		lua_State *L = [stat getLuaState];
 
 		lua_newtable(L);
-		lua_pushstring(L, "__gc");
-		lua_pushcfunction(L, finalize_object);
-		lua_settable(L, -3);
 		gc_metatable_ref = luaL_ref(L, LUA_REGISTRYINDEX);
-
-		NSLog(@"%s: metatable_ref = %d", __PRETTY_FUNCTION__, gc_metatable_ref);
-
+        luaL_openlibs(L); // load all the basic libraries into the interpreter
+        lua_settop(L, 0);
 	}
 	return stat;
 }
 
-- (void)dostring:(NSString *)stmt
+- (lua_State*) getLuaState
 {
-	if (luaL_dostring(L, [stmt cStringUsingEncoding:NSUTF8StringEncoding]))
-	{
-		NSLog(@"Lua Error: %s", lua_tostring(L, -1));
-		lua_pop(L, 1);
-	}
+    return L;
 }
 
 
 
+#pragma mark - Operations (Lua to Method Calls)
+// This method gets called via the C function operate, not directly
 - (void)operate:(NSString *)opname onStack:(NSMutableArray *)stack
 {
 	orig_exception_handler = NSGetUncaughtExceptionHandler();
@@ -120,10 +110,10 @@ int finalize_object(lua_State *L)
 	[self performSelector:sel withObject:stack];
 
 	NSSetUncaughtExceptionHandler(orig_exception_handler);
-	orig_exception_handler = NULL;
+	
+    orig_exception_handler = NULL;
 	exception_handler_stack = NULL;
 	exception_handler_opname = NULL;
-
 }
 
 - (void)op_call:(NSMutableArray *)stack
@@ -300,7 +290,7 @@ int finalize_object(lua_State *L)
 		[inv getReturnValue:buffer];
 		//        NSLog(@"ret = %c", *(unichar*)buffer);
 	}
-#define CNVBUF(type) type x = *(type*)buffer
+
 
 	switch (rettype[0])
 	{
@@ -455,28 +445,20 @@ int finalize_object(lua_State *L)
 	free(buffer);
 }
 
-- (NSNumber *)popNumber:(NSMutableArray *)stack
-{
-	NSNumber *num = [stack lastObject];
-	[stack removeLastObject];
-
-	return num;
-}
 
 - (void)op_cgrectmake:(NSMutableArray *)stack
 {
-	double x = [[self popNumber:stack] doubleValue];
-	double y = [[self popNumber:stack] doubleValue];
-	double w = [[self popNumber:stack] doubleValue];
-	double h = [[self popNumber:stack] doubleValue];
+	double x = [[stack lastObject] doubleValue];
+    [stack removeLastObject];
+	double y = [[stack lastObject] doubleValue];
+    [stack removeLastObject];
+	double w = [[stack lastObject] doubleValue];
+    [stack removeLastObject];
+	double h = [[stack lastObject] doubleValue];
+    [stack removeLastObject];
 
 	CGRect rect = CGRectMake(x, y, w, h);
 	[stack addObject:[NSValue valueWithCGRect:rect]];
-}
-
-- (void)pushObject:(id)obj
-{
-	luabridge_push_object(L, obj);
 }
 
 #pragma mark - Exception Handling
@@ -497,235 +479,8 @@ static void lua_exception_handler(NSException *exception)
 @end
 
 
-@implementation LuaObjectReference
-
-@synthesize ref, L;
-
-- (void)dealloc
-{
-	luaL_unref(self.L, LUA_REGISTRYINDEX, self.ref);
-}
-@end
 
 
-#pragma mark - Bridged C Functions
 
 
-void luabridge_push_object(lua_State *L, id obj)
-{
-	if (obj == nil)
-	{
-		lua_pushnil(L);
-	}
-	else if ([obj isKindOfClass:[NSString class]])
-	{
-		lua_pushstring(L, [obj cStringUsingEncoding:NSUTF8StringEncoding]);
-	}
-	else if ([obj isKindOfClass:[NSNumber class]])
-	{
-		lua_pushnumber(L, [obj doubleValue]);
-	}
-	else if ([obj isKindOfClass:[NSNull class]])
-	{
-		lua_pushnil(L);
-		//    } else if ([obj isKindOfClass:[PointerObject class]]) {
-		//        lua_pushlightuserdata(L, [(PointerObject*)obj ptr]);
-	}
-	else if ([obj isKindOfClass:[LuaObjectReference class]])
-	{
-		int ref = ((LuaObjectReference *)obj).ref;
-		lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
-	}
-	else
-	{
 
-
-		void *ud = lua_newuserdata(L, sizeof(void *));
-		void **udptr = (void **)ud;
-		*udptr = (__bridge_retained void *)(obj);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, gc_metatable_ref);
-		lua_setmetatable(L, -2);
-	}
-}
-
-int luafunc_newstack(lua_State *L)
-{
-	NSMutableArray *arr = [[NSMutableArray alloc] init];
-
-	lua_pushlightuserdata(L, (__bridge_retained void *)(arr));
-
-	return 1;
-}
-
-int luafunc_getclass(lua_State *L)
-{
-	const char *classname = lua_tostring(L, -1);
-	id cls = objc_getClass(classname);
-	lua_pushlightuserdata(L, (__bridge void *)(cls));
-	return 1;
-}
-
-int luafunc_push(lua_State *L)
-{
-	int top = lua_gettop(L);
-
-	NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-	//    NSLog(@"arr %@", arr);
-	for (int i = 2; i <= top; i++)
-	{
-		int t = lua_type(L, i);
-		switch (t)
-		{
-			case LUA_TNIL:
-				[arr addObject:[NSNull null]];
-		        break;
-			case LUA_TNUMBER:
-				[arr addObject:[NSNumber numberWithDouble:lua_tonumber(L, i)]];
-		        break;
-			case LUA_TBOOLEAN:
-				[arr addObject:[NSNumber numberWithBool:lua_toboolean(L, i)]];
-		        break;
-			case LUA_TSTRING:
-				[arr addObject:[NSString stringWithCString:lua_tostring(L, i) encoding:NSUTF8StringEncoding]];
-		        break;
-			case LUA_TLIGHTUSERDATA:
-				[arr addObject:(__bridge id)lua_topointer(L, i)];
-		        break;
-			case LUA_TUSERDATA:
-			{
-				void *p = lua_touserdata(L, i);
-				void **ptr = (void **)p;
-				[arr addObject:(__bridge id)*ptr];
-			}
-		        break;
-			case LUA_TTABLE:
-			case LUA_TFUNCTION:
-			case LUA_TTHREAD:
-			{
-				LuaObjectReference *ref = [LuaObjectReference new];
-				ref.ref = luaL_ref(L, LUA_REGISTRYINDEX);
-				ref.L = L;
-				[arr addObject:ref];
-			}
-		        break;
-			case LUA_TNONE:
-			default:
-			{
-				NSString *errmsg = [NSString stringWithFormat:@"Value type not supported. type = %d", t];
-				lua_pushstring(L, [errmsg UTF8String]);
-				lua_error(L);
-			}
-		        break;
-		}
-	}
-
-	return 0;
-}
-
-int luafunc_operate(lua_State *L)
-{
-	NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-	NSString *opname = [NSString stringWithCString:lua_tostring(L, 2) encoding:NSUTF8StringEncoding];
-
-	[[LuaBridge instance] operate:opname onStack:arr];
-	return 0;
-}
-
-int luafunc_pop(lua_State *L)
-{
-	NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-	id obj = [arr lastObject];
-	[arr removeLastObject];
-
-	luabridge_push_object(L, obj);
-
-	return 1;
-}
-
-int luafunc_clear(lua_State *L)
-{
-	NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-	[arr removeAllObjects];
-
-	return 0;
-}
-
-int luafunc_hoge(lua_State *L)
-{
-	NSString *str = @"Hoge Fuga";
-	SEL sel = sel_getUid("characterAtIndex:");
-	NSMethodSignature *sig = [str methodSignatureForSelector:sel];
-	NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
-	NSUInteger numarg = [sig numberOfArguments];
-	NSLog(@"Number of arguments = %lu", (unsigned long)numarg);
-
-	for (int i = 0; i < numarg; i++)
-	{
-		const char *t = [sig getArgumentTypeAtIndex:i];
-		NSLog(@"arg %d: %s", i, t);
-	}
-
-	[inv setTarget:str];
-	[inv setSelector:sel];
-	NSUInteger arg1 = 5;
-	[inv setArgument:&arg1 atIndex:2];
-	[inv invoke];
-
-	NSUInteger len = [[inv methodSignature] methodReturnLength];
-	const char *rettype = [sig methodReturnType];
-	NSLog(@"ret type = %s", rettype);
-	void *buffer = malloc(len);
-	[inv getReturnValue:buffer];
-	NSLog(@"ret = %c", *(unichar *)buffer);
-
-	lua_pushinteger(L, *(unichar *)buffer);
-
-	return 1;
-}
-
-int luafunc_extract(lua_State *L)
-{
-	NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-	NSString *type = [NSString stringWithUTF8String:lua_tostring(L, 2)];
-	NSValue *val = [arr lastObject];
-	[arr removeLastObject];
-
-	int retnum = 0;
-
-	if ([type compare:@"CGSize"] == NSOrderedSame)
-	{
-		CGSize size = [val CGSizeValue];
-		lua_pushnumber(L, size.width);
-		lua_pushnumber(L, size.height);
-		retnum = 2;
-	}
-	else if ([type compare:@"CGPoint"] == NSOrderedSame)
-	{
-		CGPoint p = [val CGPointValue];
-		lua_pushnumber(L, p.x);
-		lua_pushnumber(L, p.y);
-		retnum = 2;
-	}
-	else if ([type compare:@"CGRect"] == NSOrderedSame)
-	{
-		CGRect r = [val CGRectValue];
-		lua_pushnumber(L, r.origin.x);
-		lua_pushnumber(L, r.origin.y);
-		lua_pushnumber(L, r.size.width);
-		lua_pushnumber(L, r.size.height);
-		retnum = 4;
-	}
-	else if ([type compare:@"CGAffineTransform"] == NSOrderedSame)
-	{
-		CGAffineTransform t = [val CGAffineTransformValue];
-		lua_pushnumber(L, t.a);
-		lua_pushnumber(L, t.b);
-		lua_pushnumber(L, t.c);
-		lua_pushnumber(L, t.d);
-		lua_pushnumber(L, t.tx);
-		lua_pushnumber(L, t.ty);
-		retnum = 6;
-	}
-
-	return retnum;
-}
