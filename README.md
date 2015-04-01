@@ -1,12 +1,35 @@
 EasyLua
 ======================
+EasyLua is an easy to integrate and easy to use library for bridging Obj-C and Lua.
+Our goal was to make a library which is easy to call into lua and out
+to iOS with no knowlege required of how the lua c bridge worked. An emphesis was
+placed on also making the lua code readable when using objective-c classes
+
+No initialization is needed on the iOS side. Examples within objective-c:
+
+    [[EasyLua sharedEasyLua] runLuaString:@"print(\"Hello World\")"];
+    [[EasyLua sharedEasyLua] runLuaBundleFile:@"MyCode.lua"]
+
+All Objective-c classes in the binary are available for use in lua. Some Example lua code:
+
+	instance = MyClassName('alloc')('init')
+	instance('methodName:', 'param_1', 'param_2')
+
+When calling methods, Lua stirngs are automatically converted into NSStrings and numebrs, if needed will be converted to NSNumbers
+
+
+Current Limitations
+=======
+Currently, calling a method such as this will fail:
+
+	NSString('alloc')('init')
+
+This is because strings are converted into lua strings right away, so when you all init, it does not know what to do. This can be fixed in the future. 
+
+Additionally, having more than one Lua environment is not supported.
+
 
 EasyLua is an iOS centric branch of Lua-Objective-C Bridge. Special thanks to the original author Toru Hisai!
-
-Our goal is to make an exceptionally easy to use and bridge which requires no extra knowlege except the basics of Lua to use. Emphesis is put on making it easy to call Obj-C from within the lua and vice-versa
-
-This is still testing and more details will be listed soon
-
 
 License
 =======
@@ -34,6 +57,6 @@ THE SOFTWARE.
 
 Author
 ======
-Maintainer: David Holtkamp david@crimson-moon.com
+EasyLua: David Holtkamp david@crimson-moon.com
 
-Original Author: Toru Hisai toru@torus.jp @torus 
+Lua-Objective-C Bridge Author: Toru Hisai toru@torus.jp @torus 
