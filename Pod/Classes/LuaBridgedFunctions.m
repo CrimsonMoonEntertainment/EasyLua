@@ -19,7 +19,7 @@ static int gc_metatable_ref;
 
 
 
-void luabridge_push_object(lua_State *L, id obj)
+void luabridge_push_object(lua_State *L, id obj, bool dounwrap)
 {
     if (obj == nil)
     {
@@ -53,11 +53,31 @@ void luabridge_push_object(lua_State *L, id obj)
     }
     else
     {
-        void *ud = lua_newuserdata(L, sizeof(void *));
-        void **udptr = (void **)ud;
-        *udptr = (__bridge_retained void *)(obj);
-        lua_rawgeti(L, LUA_REGISTRYINDEX, gc_metatable_ref);
-        lua_setmetatable(L, -2);
+        // We need to wrap this value before pushing
+        if(dounwrap)
+        {
+            lua_getglobal(L, "wrap");
+            lua_pushlightuserdata(L, (__bridge void*)obj);
+            if(lua_pcall(L, 1, 1, 0) != LUA_OK)
+            {
+                NSLog(@"Error running specified lua function wrap");
+            }
+            
+            // We don't pop the data! We simply leave it there for the function to read as its param
+        }
+        
+        else
+        {
+            lua_pushlightuserdata(L, (__bridge void*)obj);
+        }
+        
+        
+        
+        //void *ud = lua_newuserdata(L, sizeof(void *));
+        //void **udptr = (void **)ud;
+        //*udptr = (__bridge_retained void *)(obj);
+        // lua_rawgeti(L, LUA_REGISTRYINDEX, gc_metatable_ref);
+        // lua_setmetatable(L, -2);
     }
 }
 
@@ -150,7 +170,7 @@ int luafunc_pop(lua_State *L)
     id obj = [arr lastObject];
     [arr removeLastObject];
     
-    luabridge_push_object(L, obj);
+    luabridge_push_object(L, obj, false);
     
     return 1;
 }

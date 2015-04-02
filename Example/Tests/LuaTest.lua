@@ -8,6 +8,27 @@ function SetTestValue(val)
 end
 
 
+function TestNSDictionay(dict)
+
+    print ('Test Started')
+    print(dict['TestKey'])
+    if dict['TestKey'] == 'TestValue' then
+        SetTestValue(true)
+    else
+        print 'Failed to read dict'
+    end
+
+    new_dict = NSMutableDictionary('alloc')('init')
+    print('Almost Done')
+    new_dict['ReturnKey'] = 'ReturnValue'
+    return new_dict
+end
+
+function TestObjects(val)
+    val("instanceSetLastTestState:", true)    
+    return val
+end
+
 function TestGettingBool()
     local val = ObjCTest("returnBoolValue:", true)
     if val == false then
@@ -53,7 +74,6 @@ function TestBoolTypes()
         SetTestValue(false)
         return
     end
-    print('success')
     SetTestValue(true)
 end
 

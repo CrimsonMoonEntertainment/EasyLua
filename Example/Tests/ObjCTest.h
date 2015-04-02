@@ -12,5 +12,6 @@
 
 + (bool)getLastTestState;
 + (void)setLastTestState:(bool)testState;
+- (void)instanceSetLastTestState:(bool)testState;
 
 @end

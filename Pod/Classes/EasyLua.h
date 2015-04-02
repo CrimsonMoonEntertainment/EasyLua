@@ -24,11 +24,13 @@
 - (bool)runLuaString:(NSString *)string;
 
 #pragma mark - Call Loaded Function
-- (void)callVoidReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // 0 Return Values
-- (double)callNumberReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;
-- (bool)callBoolReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // Returns 1 Bool
-- (NSString *)callStringReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;   // Returns 1 String
-//- (id)callObjectReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;           // Returns 1 NSObject
+- (void)callLuaFunctionReturningVoid:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (double)callLuaFunctionReturningNumber:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (NSString *)callLuaFunctionReturningString:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (bool)callLuaFunctionReturningBool:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (id)callLuaFunctionReturningObject:(NSString *)functionName withArguments:(NSArray *)arguments;
 
+#pragma mark - Lua Access
+- (lua_State *)getLuaState;
 
 @end

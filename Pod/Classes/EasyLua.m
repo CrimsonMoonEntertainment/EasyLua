@@ -73,12 +73,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 
 
 #pragma mark - Call Loaded Function
-- (void)callVoidReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+- (void)callLuaFunctionReturningVoid:(NSString *)functionName withArguments:(NSArray *)arguments
 {
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        luabridge_push_object(L, item);
+        luabridge_push_object(L, item, true);
     }
     
     if(lua_pcall(L, (int)[arguments count], 0, 0) != LUA_OK)
@@ -88,12 +88,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 }
 
 
-- (double)callNumberReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+- (double)callLuaFunctionReturningNumber:(NSString *)functionName withArguments:(NSArray *)arguments
 {
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        luabridge_push_object(L, item);
+        luabridge_push_object(L, item, true);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -113,12 +113,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     
 }
 
-- (bool)callBoolReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+- (bool)callLuaFunctionReturningBool:(NSString *)functionName withArguments:(NSArray *)arguments
 {
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        luabridge_push_object(L, item);
+        luabridge_push_object(L, item, true);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -131,12 +131,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     return ret_value;
 }
 
-- (NSString *)callStringReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+- (NSString *)callLuaFunctionReturningString:(NSString *)functionName withArguments:(NSArray *)arguments
 {
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        luabridge_push_object(L, item);
+        luabridge_push_object(L, item, true);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -149,7 +149,39 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     return string;
 }
 
-//- (id)callObjectReturningLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
+- (id)callLuaFunctionReturningObject:(NSString *)functionName withArguments:(NSArray *)arguments
+{
+    lua_getglobal(L, "unwrap"); // We are unwrapping right after this next funciton, so I'm placing it here
+                                // so it will be in the right place in the stack.
+    lua_getglobal(L, [functionName UTF8String]);
+    
+    for(id item in arguments)
+    {
+        luabridge_push_object(L, item, true);
+    }
+    
+    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
+    {
+        NSLog(@"Error running specified lua function %@", functionName);
+    }
+    
+    
+    if(lua_pcall(L, 1, 1, 0) != LUA_OK)
+    {
+        NSLog(@"Error unwarpping return value");
+    }
+    
+    id object = (__bridge NSObject *)lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    
+    return object;
+}
+
+#pragma mark - Lua Access
+- (lua_State *)getLuaState
+{
+    return L;
+}
 
 
 #pragma mark - Private

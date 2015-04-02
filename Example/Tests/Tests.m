@@ -48,15 +48,31 @@ describe(@"EasyLua Tests", ^{
         expect([ObjCTest getLastTestState]).equal(true);
     });
     
-    
-    
+    it(@"can pass, return, and call Obj-C objects", ^{
+        [ObjCTest setLastTestState:false];
+        ObjCTest *my_instance = [[ObjCTest alloc] init];
+
+        id instance = [[EasyLua sharedEasyLua] callLuaFunctionReturningObject:@"TestObjects" withArguments:@[my_instance]];
+        expect([ObjCTest getLastTestState]).equal(true);
+        [ObjCTest setLastTestState:false];
+        [((ObjCTest *)instance) instanceSetLastTestState:true];
+        expect([ObjCTest getLastTestState]).equal(true);
+    });
+    it(@"can handle NSDicitonary", ^{
+        [ObjCTest setLastTestState:false];
+        NSDictionary* data_in = @{@"TestKey":@"TestValue"};
+        NSDictionary* data = [[EasyLua sharedEasyLua] callLuaFunctionReturningObject:@"TestNSDictionay" withArguments:@[data_in]];
+        expect([ObjCTest getLastTestState]).equal(true);
+
+        expect([data[@"ReturnKey"] isEqualToString:@"ReturnValue"]).equal(true);
+    });
     
     it(@"We can call into Lua", ^{
-        
-        [[EasyLua sharedEasyLua] callVoidReturningLuaFunction:@"TestVoidFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
-        bool b_val = [[EasyLua sharedEasyLua] callBoolReturningLuaFunction:@"TestBoolFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
-        double d_val = [[EasyLua sharedEasyLua] callNumberReturningLuaFunction:@"TestNumberFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
-        NSString* s_val = [[EasyLua sharedEasyLua] callStringReturningLuaFunction:@"TestStringFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
+
+        [[EasyLua sharedEasyLua] callLuaFunctionReturningVoid:@"TestVoidFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
+        bool b_val = [[EasyLua sharedEasyLua] callLuaFunctionReturningBool:@"TestBoolFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
+        double d_val = [[EasyLua sharedEasyLua] callLuaFunctionReturningNumber:@"TestNumberFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
+        NSString* s_val = [[EasyLua sharedEasyLua] callLuaFunctionReturningString:@"TestStringFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
         
         expect(d_val).to.equal(124.2);
         expect(b_val).to.equal(true);

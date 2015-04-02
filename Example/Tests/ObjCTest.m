@@ -22,6 +22,10 @@ static bool LastTestState = false;
     LastTestState = testState;
 }
 
+- (void)instanceSetLastTestState:(bool)testState
+{
+    LastTestState = testState;
+}
 
 + (bool)returnBoolValue:(bool)valueIn
 {
