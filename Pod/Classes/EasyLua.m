@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Crimson Moon Entertainment LLC. All rights reserved.
 //
 #import "CMSynthesizeSingleton.h"
+#import "LuaBridgedFunctions.h"
 #import "EasyLua.h"
 
 @implementation EasyLua
@@ -77,7 +78,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        [self pushValueToLua:item];
+        luabridge_push_object(L, item);
     }
     
     if(lua_pcall(L, (int)[arguments count], 0, 0) != LUA_OK)
@@ -92,7 +93,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        [self pushValueToLua:item];
+        luabridge_push_object(L, item);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -117,7 +118,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        [self pushValueToLua:item];
+        luabridge_push_object(L, item);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -135,7 +136,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     lua_getglobal(L, [functionName UTF8String]);
     for(id item in arguments)
     {
-        [self pushValueToLua:item];
+        luabridge_push_object(L, item);
     }
     
     if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
@@ -152,29 +153,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 
 
 #pragma mark - Private
-
-- (void)pushValueToLua:(id)value
-{
-    if([value isKindOfClass:[NSString class]])
-    {
-        lua_pushstring(L, [value UTF8String]);
-    }
-    else if([value isKindOfClass:[NSNumber class]])
-    {
-        if(strcmp([value objCType], [@"c" UTF8String]) == 0)
-        {
-            lua_pushboolean(L, [value intValue]);
-        }
-        else
-        {
-            lua_pushnumber(L, [value doubleValue]);
-        }
-    }
-    else
-    {
-        NSLog(@"Put an unsupported type in the argment array for a lua function call");
-    }
-}
 
 
 - (void)resetState

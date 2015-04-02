@@ -1,67 +1,90 @@
 
 
-print("--start--")
--- my_string = NSString("alloc")("init");
 my_object = ObjCTest("alloc")("init")
 
---[[
-number = my_object("memberMethodWithNumber:", 42)
-print("NSNumber")
-print(number);
 
-number = my_object("memberMethodWithInt:", 42)
-print("int")
-print(number);
+function SetTestValue(val)
+    ObjCTest("setLastTestState:", val)
+end
 
-]]
 
-new_pointer = my_object("memberMethodWithPointer:", my_object)
-number = new_pointer("memberMethodWithInt:", 44)
+function TestGettingBool()
+    local val = ObjCTest("returnBoolValue:", true)
+    if val == false then
+        SetTestValue(false)
+        return
+    end
 
-print(number);
+    val = ObjCTest("returnBoolValue:", false)
+    if val == true then
+        SetTestValue(false)
+        return
+    end
 
-print("--end--")
+    local val = ObjCTest("returnBoolValueAsNSNumber:", true)
+    if val == false then
+        SetTestValue(false)
+        return
+    end
+
+    val = ObjCTest("returnBoolValueAsNSNumber:", false)
+    if val == true then
+        SetTestValue(false)
+        return
+    end
+
+    SetTestValue(true)
+end
+
+function TestBoolTypes()
+
+    local val = ObjCTest("returnBoolValue:", true)
+    if type(val) ~= 'boolean' then
+        print('failed bool type')
+        print(type(val))
+        SetTestValue(false)
+        return
+    end
+
+    val = ObjCTest("returnBoolValueAsNSNumber:", true)
+    if type(val) ~= 'boolean' then
+        print('failed NSNumebr type')
+        print(type(val))
+        SetTestValue(false)
+        return
+    end
+    print('success')
+    SetTestValue(true)
+end
+
+
+function TestStrings()
+    local val = ObjCTest("returnStringValue:", "TestString")
+    if val ~= "TestString" then
+        print('failed string')
+        print(type(val))
+        print(val)
+        SetTestValue(false)
+        return
+    end
+
+    SetTestValue(true)
+end
 
 
 function TestVoidFunction(in_string, in_number, in_bool)
-    print('function test')
-    print(type(in_string))
-    print(in_string)
-    print(type(in_number))
-    print(in_number)
-    print(type(in_bool))
-    print(in_bool)
+
 end
 
 function TestNumberFunction(in_string, in_number, in_bool)
-    print('function test')
-    print(type(in_string))
-    print(in_string)
-    print(type(in_number))
-    print(in_number)
-    print(type(in_bool))
-    print(in_bool)
     return in_number
 end
 
 function TestBoolFunction(in_string, in_number, in_bool)
-    print('function test')
-    print(type(in_string))
-    print(in_string)
-    print(type(in_number))
-    print(in_number)
-    print(type(in_bool))
-    print(in_bool)
     return in_bool
 end
 
 function TestStringFunction(in_string, in_number, in_bool)
-    print('function test')
-    print(type(in_string))
-    print(in_string)
-    print(type(in_number))
-    print(in_number)
-    print(type(in_bool))
-    print(in_bool)
     return in_string
 end
+

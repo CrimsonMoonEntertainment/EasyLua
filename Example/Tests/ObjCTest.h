@@ -10,4 +10,7 @@
 
 @interface ObjCTest : NSObject
 
++ (bool)getLastTestState;
++ (void)setLastTestState:(bool)testState;
+
 @end

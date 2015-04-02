@@ -7,6 +7,7 @@
 //
 
 #import "EasyLua.h"
+#import "ObjCTest.h"
 
 SpecBegin(EasyLua)
 
@@ -17,14 +18,38 @@ describe(@"EasyLua Tests", ^{
     {
         EasyLua* instance = [EasyLua sharedEasyLua];
         expect(instance).notTo.equal(nil);
-       
         [instance runLuaBundleFile:@"LuaTest"];
     });
     
     
     it(@"can run string", ^{
-        
+        [ObjCTest setLastTestState:false];
+        [[EasyLua sharedEasyLua] runLuaString:@"SetTestValue(true)"];
+        expect([ObjCTest getLastTestState]).equal(true);
+        [[EasyLua sharedEasyLua] runLuaString:@"SetTestValue(false)"];
+        expect([ObjCTest getLastTestState]).equal(false);
     });
+    
+    it(@"can handle strings", ^{
+        [ObjCTest setLastTestState:false];
+        [[EasyLua sharedEasyLua] runLuaString:@"TestStrings()"];
+        expect([ObjCTest getLastTestState]).equal(true);
+    });
+    
+    it(@"can handle bools", ^{
+        [ObjCTest setLastTestState:false];
+        [[EasyLua sharedEasyLua] runLuaString:@"TestGettingBool()"];
+        expect([ObjCTest getLastTestState]).equal(true);
+    });
+    
+    it(@"can interpret bool types", ^{
+        [ObjCTest setLastTestState:false];
+        [[EasyLua sharedEasyLua] runLuaString:@"TestBoolTypes()"];
+        expect([ObjCTest getLastTestState]).equal(true);
+    });
+    
+    
+    
     
     it(@"We can call into Lua", ^{
         
@@ -36,8 +61,6 @@ describe(@"EasyLua Tests", ^{
         expect(d_val).to.equal(124.2);
         expect(b_val).to.equal(true);
         expect([s_val isEqualToString:@"TestString"]).equal(true);
-        
-        expect(@"team").toNot.contain(@"I");
     });
     
 });

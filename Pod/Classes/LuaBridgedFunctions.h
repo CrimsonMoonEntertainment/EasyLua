@@ -18,6 +18,8 @@ extern "C" {
 #endif
 
 
+void luabridge_push_object(lua_State *L, id obj);
+
 int luafunc_hoge(lua_State *L);
 int luafunc_newstack(lua_State *L);
 int luafunc_push(lua_State *L);

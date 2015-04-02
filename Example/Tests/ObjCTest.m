@@ -8,7 +8,36 @@
 
 #import "ObjCTest.h"
 
+static bool LastTestState = false;
+
 @implementation ObjCTest
+
++ (bool)getLastTestState
+{
+    return LastTestState;
+}
+
++ (void)setLastTestState:(bool)testState
+{
+    LastTestState = testState;
+}
+
+
++ (bool)returnBoolValue:(bool)valueIn
+{
+    return valueIn;
+}
+
++ (NSNumber *)returnBoolValueAsNSNumber:(bool)valueIn
+{
+    return [NSNumber numberWithBool:valueIn];
+}
+
+
++ (NSString *)returnStringValue:(NSString *)stringIn
+{
+    return stringIn;
+}
 
 + (bool)returnTrue:(NSString*)junk_string
 {
@@ -43,6 +72,7 @@
     [testPointer memberMethodWithInt:43];
     return testPointer;
 }
+
 
 
 @end

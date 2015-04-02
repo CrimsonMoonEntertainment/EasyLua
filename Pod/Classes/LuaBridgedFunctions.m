@@ -31,7 +31,14 @@ void luabridge_push_object(lua_State *L, id obj)
     }
     else if ([obj isKindOfClass:[NSNumber class]])
     {
-        lua_pushnumber(L, [obj doubleValue]);
+        if(strcmp([obj objCType], [@"c" UTF8String]) == 0)
+        {
+            lua_pushboolean(L, [obj intValue]);
+        }
+        else
+        {
+            lua_pushnumber(L, [obj doubleValue]);
+        }
     }
     else if ([obj isKindOfClass:[NSNull class]])
     {

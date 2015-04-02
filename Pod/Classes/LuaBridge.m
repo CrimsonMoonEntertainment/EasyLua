@@ -213,7 +213,7 @@ static int gc_metatable_ref;
 		        break;
 			case 'B': // A C++ bool or a C99 _Bool
 			{
-				int x = [(NSNumber *)arg boolValue];
+				bool x = [(NSNumber *)arg boolValue];
 				[inv setArgument:&x atIndex:i];
 			}
 		        break;

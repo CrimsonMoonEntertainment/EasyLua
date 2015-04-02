@@ -45,7 +45,6 @@ end
 
 
 function getUnknownVariable(tbl, key)
-    print(key)
     local cls = objc.getclass(key)
     cls = wrap(cls)
     tbl[key] = cls
