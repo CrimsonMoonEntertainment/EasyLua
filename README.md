@@ -12,11 +12,19 @@ No initialization is needed on the iOS side. Examples within objective-c:
 
 All Objective-c classes in the binary are available for use in lua. Some Example lua code:
 
-	instance = MyClassName('alloc')('init')
-	instance('methodName:', 'param_1', 'param_2')
+    instance = MyClassName('alloc')('init')
+    instance('methodName:', 'param_1')
+    instance('methodName:param2name:', 'param_1', 'param_2')
 
-When calling methods, Lua stirngs are automatically converted into NSStrings and numebrs, if needed will be converted to NSNumbers
+When calling methods, Lua stirngs are automatically converted into NSStrings and numebrs, if needed will be converted to NSNumbers. Additionally, NSObject are wrapped and unwrapped as needed when being sent between the two environments 
 
+Dictionaries can also be used similar to how they are used in Objective-C:
+
+    new_dict = NSMutableDictionary('alloc')('init')
+    new_dict['ReturnKey'] = 'ReturnValue'
+
+
+EasyLua was originally derived from Lua-Objective-C Bridge. Special thanks to the original author Toru Hisai!
 
 Current Limitations
 =======
@@ -24,12 +32,10 @@ Currently, calling a method such as this will fail:
 
 	NSString('alloc')('init')
 
-This is because strings are converted into lua strings right away, so when you all init, it does not know what to do. This can be fixed in the future. 
+This is because strings are converted into lua strings right away, so when you all init, it does not know what to do. This can be fixed in the future but should generally not be needed as you can simply use lua string.
 
 Additionally, having more than one Lua environment is not supported.
 
-
-EasyLua is an iOS centric branch of Lua-Objective-C Bridge. Special thanks to the original author Toru Hisai!
 
 License
 =======
