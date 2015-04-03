@@ -30,5 +30,6 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = ['Foundation', 'UIKit', 'CoreGraphics']
-  s.dependency 'lua', '~> 5.2'
+  s.dependency  'lua', '~> 5.2'
+  s.dependency  'RegExCategories', '~> 1.0'
 end

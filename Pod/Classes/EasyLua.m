@@ -155,6 +155,15 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
     return L;
 }
 
+#pragma mark - Private
+#pragma mark - Objective-C Loading Translation
+
++ (NSString*)decodeObjectiveC:(NSString*)codeIn
+{
+    
+    
+    return nil;
+}
 
 
 

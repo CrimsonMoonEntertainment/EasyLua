@@ -1,8 +1,10 @@
 PODS:
-  - EasyLua (1.1.0):
+  - EasyLua (1.1.1):
     - lua (~> 5.2)
+    - RegExCategories (~> 1.0)
   - Expecta (0.3.2)
   - lua (5.2.3)
+  - RegExCategories (1.0)
   - Specta (0.5.0)
 
 DEPENDENCIES:
@@ -16,9 +18,10 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  EasyLua: 66910381f06acf196df336ea4b723f151424f873
+  EasyLua: e237efff0438f3145ba9e35f21ae527fa23aa1da
   Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
   lua: f5dfecaee3325734ef8dd47ec238797ed28b4bf5
+  RegExCategories: e68befacacd5bda853c88f70ec745cb2d0cfb89c
   Specta: eb90708ed77569bbda089f8ead10bb99b8e9489e
 
 COCOAPODS: 0.35.0
