@@ -25,6 +25,10 @@
 #pragma mark - Call Loaded Function
 - (id)callLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;
 
+#pragma mark - Get and Set Global Variables
+- (id)getLuaGlobalForKey:(NSString*)key;
+- (void)setLuaGlobalValue:(id)value forKey:(NSString*)key;
+
 #pragma mark - Lua Access
 - (lua_State *)getLuaState;
 

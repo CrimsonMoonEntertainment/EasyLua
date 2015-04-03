@@ -18,7 +18,7 @@
 
 #pragma mark - Helper Functions
 
-bool to_lua(lua_State *L, id obj, bool dounwrap)
+bool to_lua(lua_State *L, id obj, bool dowrap)
 {
     if (obj == nil)
     {
@@ -46,7 +46,7 @@ bool to_lua(lua_State *L, id obj, bool dounwrap)
     else
     {
         // We need to wrap this value before pushing
-        if(dounwrap)
+        if(dowrap)
         {
             lua_getglobal(L, "wrap");
             lua_pushlightuserdata(L, (__bridge void*)obj);
@@ -108,14 +108,6 @@ id from_lua(lua_State *L, int i)
 
 #pragma mark - Lua Registerd Functions
 
-int luafunc_newstack(lua_State *L)
-{
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    
-    lua_pushlightuserdata(L, (__bridge_retained void *)(arr));
-    
-    return 1;
-}
 
 int luafunc_getclass(lua_State *L)
 {
@@ -125,43 +117,25 @@ int luafunc_getclass(lua_State *L)
     return 1;
 }
 
-int luafunc_push(lua_State *L)
-{
-    int top = lua_gettop(L);
-    
-    NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-    //    NSLog(@"arr %@", arr);
-    for (int i = 2; i <= top; i++)
-    {
-        id value = from_lua(L, i);
-        if(value == nil)
-        {
-            NSLog(@"Attempted to push an invalid type");
-        }
-        else
-        {
-            [arr addObject:value];
-        }
-    }
-    
-    return 0;
-}
-
-
-int luafunc_pop(lua_State *L)
-{
-    NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-    id obj = [arr lastObject];
-    [arr removeLastObject];
-
-	to_lua(L, obj, false);
-    
-    return 1;
-}
 
 int luafunc_call(lua_State *L)
 {
-    NSMutableArray *stack = (__bridge NSMutableArray *)lua_topointer(L, 1);
+    NSMutableArray *stack = [[NSMutableArray alloc] init];
+    
+    lua_pushnil(L);
+    while(lua_next(L, -2))
+    {
+        int index = lua_tonumber(L, -2) - 1;
+        id object = from_lua(L, -1);
+        if(object == nil)
+        {
+            object = [NSNull null];
+        }
+        stack[index] = object;
+        lua_pop(L, 1);
+    }
+    lua_pop(L, 1);
+    
     
     NSString *message = (NSString *)[stack lastObject];
     [stack removeLastObject];
@@ -488,17 +462,11 @@ int luafunc_call(lua_State *L)
     
     free(buffer);
     
-    return 0;
-}
-
-int luafunc_clear(lua_State *L)
-{
-    NSMutableArray *arr = (__bridge NSMutableArray *)lua_topointer(L, 1);
-    [arr removeAllObjects];
+    id obj = [stack lastObject];
+    to_lua(L, obj, false);
     
-    return 0;
+    return 1;
 }
-
 
 
 

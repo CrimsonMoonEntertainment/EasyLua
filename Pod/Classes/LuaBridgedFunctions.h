@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 #pragma mark - Helper Functions
-bool to_lua(lua_State *L, id obj, bool dounwrap);
+bool to_lua(lua_State *L, id obj, bool dowrap);
 id from_lua(lua_State *L, int index);
 
 

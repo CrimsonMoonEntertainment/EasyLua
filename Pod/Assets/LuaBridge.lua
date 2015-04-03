@@ -2,22 +2,22 @@
 -- Objective-C Classes
 --
 
-stack = objc.newstack()
-
 -- Send Objective-C Messages 
 function sendMesg (target, selector, ...)
+   local to_send = {}
    local n = select("#", ...)
    for i = 1, n do
       local arg = select(-i, ...)
 
       -- If this is a wrapped object, then send what is in the wrapper
       arg = unwrap(arg)
-
-      objc.push(stack, arg)
+      table.insert(to_send, arg)
    end
-   objc.push(stack, target, selector)
-   objc.call(stack)
-   return objc.pop(stack)
+   
+   table.insert(to_send, target)
+   table.insert(to_send, selector)
+   
+   return objc.call(to_send)
 end
 
 

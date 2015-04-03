@@ -7,6 +7,30 @@ function SetTestValue(val)
     ObjCTest("setLastTestState:", val)
 end
 
+function TestGlobals()
+    if new_global ~= 'Global String' then
+        print('did not set global!')
+        SetTestValue(false)
+        return
+    end
+
+    lua_new_global = 'lua_global_string'
+    SetTestValue(true)
+end
+
+
+function TestMultiValueCalls()
+    num = ObjCTest("multiValueTest:value2:", 25, 6)  -- 2 * v1 + v2
+
+    if num ~= 56 then
+        SetTestValue(false)
+        print('Failed multi value')
+        return
+    end
+
+    SetTestValue(true)
+end
+
 
 function TestNSDictionay(dict)
 

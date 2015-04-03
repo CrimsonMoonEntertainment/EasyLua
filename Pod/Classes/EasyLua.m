@@ -32,10 +32,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
         luaL_openlibs(L);
         lua_newtable(L);
         
-        ADDMETHOD(newstack);
-        ADDMETHOD(push);
-        ADDMETHOD(pop);
-        ADDMETHOD(clear);
         ADDMETHOD(call);
         ADDMETHOD(getclass);
         
@@ -133,6 +129,25 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
         return nil;
     }
 }
+
+#pragma mark - Get and Set Global Variables
+- (id)getLuaGlobalForKey:(NSString*)key
+{
+    lua_getglobal(L, [key UTF8String]);
+    id value = from_lua(L, -1);
+    lua_pop(L, 1);
+    return value;
+}
+
+
+- (void)setLuaGlobalValue:(id)value forKey:(NSString*)key
+{
+    if(to_lua(L, value, true) == true)
+    {
+        lua_setglobal(L, [key UTF8String]);
+    }
+}
+
 
 #pragma mark - Lua Access
 - (lua_State *)getLuaState

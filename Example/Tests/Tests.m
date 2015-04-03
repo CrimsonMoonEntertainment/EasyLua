@@ -30,6 +30,23 @@ describe(@"EasyLua Tests", ^{
         expect([ObjCTest getLastTestState]).equal(false);
     });
     
+    it(@"lua can pass multiple values", ^{
+        [ObjCTest setLastTestState:false];
+        [[EasyLua sharedEasyLua] runLuaString:@"TestMultiValueCalls()"];
+        expect([ObjCTest getLastTestState]).equal(true);
+    });
+    
+    it(@"lua can get and set globals", ^{
+        [ObjCTest setLastTestState:false];
+        
+        [[EasyLua sharedEasyLua] setLuaGlobalValue:@"Global String" forKey:@"new_global"];
+        [[EasyLua sharedEasyLua] runLuaString:@"TestGlobals()"];
+        expect([ObjCTest getLastTestState]).equal(true);
+        NSString* val = [[EasyLua sharedEasyLua] getLuaGlobalForKey:@"lua_new_global"];
+        expect([val isEqualToString:@"lua_global_string"]).equal(true);
+    });
+    
+    
     it(@"can handle strings", ^{
         [ObjCTest setLastTestState:false];
         [[EasyLua sharedEasyLua] runLuaString:@"TestStrings()"];

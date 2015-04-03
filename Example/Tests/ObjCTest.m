@@ -77,6 +77,9 @@ static bool LastTestState = false;
     return testPointer;
 }
 
-
++ (int)multiValueTest:(int)value1In value2:(int)value2In
+{
+    return value1In * 2 + value2In;
+}
 
 @end
