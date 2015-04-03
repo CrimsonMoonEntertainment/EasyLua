@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "EasyLua"
-  s.version          = "1.1.0"
+  s.version          = "1.1.1"
   s.summary          = "An easy to use library for integrating Lua with Objective-c on iOS."
   s.description      = <<-DESC
                         EasyLua is lightweight, easy to integrate, and easy to use library for bridging Obj-C and Lua.
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.license          = 'MIT'
   s.author           = { "David Holtkamp" => "david@crimson-moon.com" }
   s.source           = { :git => "https://github.com/CrimsonMoonEntertainment/EasyLua.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.social_media_url = 'https://www.facebook.com/CrimsonMoonEntertainment'
 
   s.platform     = :ios, '7.0'
   s.requires_arc = true
