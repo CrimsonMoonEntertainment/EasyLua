@@ -11,7 +11,6 @@
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
-#include "LuaBridge.h"
 
 
 @interface EasyLua : NSObject
@@ -24,11 +23,7 @@
 - (bool)runLuaString:(NSString *)string;
 
 #pragma mark - Call Loaded Function
-- (void)callLuaFunctionReturningVoid:(NSString *)functionName withArguments:(NSArray *)arguments;
-- (double)callLuaFunctionReturningNumber:(NSString *)functionName withArguments:(NSArray *)arguments;
-- (NSString *)callLuaFunctionReturningString:(NSString *)functionName withArguments:(NSArray *)arguments;
-- (bool)callLuaFunctionReturningBool:(NSString *)functionName withArguments:(NSArray *)arguments;
-- (id)callLuaFunctionReturningObject:(NSString *)functionName withArguments:(NSArray *)arguments;
+- (id)callLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments;
 
 #pragma mark - Lua Access
 - (lua_State *)getLuaState;

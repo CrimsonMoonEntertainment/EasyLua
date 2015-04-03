@@ -9,10 +9,15 @@
 #import "LuaBridgedFunctions.h"
 #import "EasyLua.h"
 
+#define ADDMETHOD(name) \
+(lua_pushstring(L, #name), \
+lua_pushcfunction(L, luafunc_ ## name), \
+lua_settable(L, -3))
+
+
 @implementation EasyLua
 {
     lua_State *L;
-    LuaBridge *Bridge;
 }
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
@@ -23,7 +28,28 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 {
 	if (self = [super init])
 	{
-		[self resetState];
+        L = luaL_newstate();
+        luaL_openlibs(L);
+        lua_newtable(L);
+        
+        ADDMETHOD(newstack);
+        ADDMETHOD(push);
+        ADDMETHOD(pop);
+        ADDMETHOD(clear);
+        ADDMETHOD(call);
+        ADDMETHOD(getclass);
+        
+        lua_setglobal(L, "objc");
+        
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString *path = [bundle pathForResource:@"LuaBridge" ofType:@"lua"];
+        if (luaL_dofile(L, [path UTF8String]))
+        {
+            const char *err = lua_tostring(L, -1);
+            NSLog(@"error while loading utils: %s", err);
+        }
+        
+        lua_settop(L, 0);
 	}
 
 	return self;
@@ -73,108 +99,39 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 
 
 #pragma mark - Call Loaded Function
-- (void)callLuaFunctionReturningVoid:(NSString *)functionName withArguments:(NSArray *)arguments
-{
-    lua_getglobal(L, [functionName UTF8String]);
-    for(id item in arguments)
-    {
-        luabridge_push_object(L, item, true);
-    }
-    
-    if(lua_pcall(L, (int)[arguments count], 0, 0) != LUA_OK)
-    {
-        NSLog(@"Error running specified lua function %@", functionName);
-    }
-}
-
-
-- (double)callLuaFunctionReturningNumber:(NSString *)functionName withArguments:(NSArray *)arguments
-{
-    lua_getglobal(L, [functionName UTF8String]);
-    for(id item in arguments)
-    {
-        luabridge_push_object(L, item, true);
-    }
-    
-    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
-    {
-        NSLog(@"Error running specified lua function %@", functionName);
-    }
-    int is_num;
-    double ret_value = lua_tonumberx(L, -1, &is_num);
-    
-    if(is_num == false)
-    {
-        NSLog(@"Function %@ called was not returning a number", functionName);
-    }
-    
-    lua_pop(L, 1);
-    return ret_value;
-    
-}
-
-- (bool)callLuaFunctionReturningBool:(NSString *)functionName withArguments:(NSArray *)arguments
-{
-    lua_getglobal(L, [functionName UTF8String]);
-    for(id item in arguments)
-    {
-        luabridge_push_object(L, item, true);
-    }
-    
-    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
-    {
-        NSLog(@"Error running specified lua function %@", functionName);
-    }
-
-    bool ret_value = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    return ret_value;
-}
-
-- (NSString *)callLuaFunctionReturningString:(NSString *)functionName withArguments:(NSArray *)arguments
-{
-    lua_getglobal(L, [functionName UTF8String]);
-    for(id item in arguments)
-    {
-        luabridge_push_object(L, item, true);
-    }
-    
-    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
-    {
-        NSLog(@"Error running specified lua function %@", functionName);
-    }
-    
-    NSString* string = [NSString stringWithUTF8String:lua_tostring(L, -1)];
-    lua_pop(L, 1);
-    return string;
-}
-
-- (id)callLuaFunctionReturningObject:(NSString *)functionName withArguments:(NSArray *)arguments
+- (id)callLuaFunction:(NSString *)functionName withArguments:(NSArray *)arguments
 {
     lua_getglobal(L, "unwrap"); // We are unwrapping right after this next funciton, so I'm placing it here
-                                // so it will be in the right place in the stack.
+                                // so it will be in the right place in the stack
     lua_getglobal(L, [functionName UTF8String]);
     
     for(id item in arguments)
     {
-        luabridge_push_object(L, item, true);
+	    to_lua(L, item, true);
     }
     
-    if(lua_pcall(L, (int)[arguments count], 1, 0) != LUA_OK)
+    if(lua_pcall(L, (int)[arguments count], LUA_MULTRET, 0) != LUA_OK)
     {
-        NSLog(@"Error running specified lua function %@", functionName);
+	    NSLog(@"Error running specified lua function %@", functionName);
     }
-    
-    
-    if(lua_pcall(L, 1, 1, 0) != LUA_OK)
+
+	int top = lua_gettop(L);
+
+    if(top == 2)
     {
-        NSLog(@"Error unwarpping return value");
+        if(lua_pcall(L, 1, 1, 0) != LUA_OK) // Call unwrap on what we had above
+        {
+            NSLog(@"Error unwarpping return value");
+        }
+        id object = from_lua(L, 1);
+        lua_pop(L, 1);
+        return object;
     }
-    
-    id object = (__bridge NSObject *)lua_touserdata(L, -1);
-    lua_pop(L, 1);
-    
-    return object;
+    else
+    {
+        lua_pop(L, 1); // pop unused unwrap
+        return nil;
+    }
 }
 
 #pragma mark - Lua Access
@@ -184,14 +141,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 }
 
 
-#pragma mark - Private
 
-
-- (void)resetState
-{
-    Bridge = [LuaBridge instance];
-	L = [Bridge getLuaState];
-}
 
 
 @end

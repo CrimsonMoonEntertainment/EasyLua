@@ -11,18 +11,15 @@ function sendMesg (target, selector, ...)
       local arg = select(-i, ...)
 
       -- If this is a wrapped object, then send what is in the wrapper
-      if type(arg) == "table" then
-        if arg["WrappedObject"] ~= nil then
-          arg = arg["WrappedObject"]
-        end
-      end
+      arg = unwrap(arg)
 
       objc.push(stack, arg)
    end
    objc.push(stack, target, selector)
-   objc.operate(stack, "call")
+   objc.call(stack)
    return objc.pop(stack)
 end
+
 
 -- Wrap Objective-C Pointers
 function wrap(obj)
@@ -57,7 +54,13 @@ end
 
 -- Unwrap Objective-C Pointers
 function unwrap(obj)
-  return obj["WrappedObject"]
+  if type(obj) == "table" then
+      if obj["WrappedObject"] ~= nil then
+        return obj["WrappedObject"]
+      end
+  end
+
+  return obj
 end
 
 -- Looks for Objective-C class if variable is not found in global space

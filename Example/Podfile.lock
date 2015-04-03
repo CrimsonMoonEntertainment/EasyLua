@@ -1,9 +1,9 @@
 PODS:
-  - EasyLua (0.1.1):
+  - EasyLua (1.0.2):
     - lua (~> 5.2)
   - Expecta (0.3.2)
   - lua (5.2.3)
-  - Specta (0.4.0)
+  - Specta (0.5.0)
 
 DEPENDENCIES:
   - EasyLua (from `../`)
@@ -16,9 +16,9 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  EasyLua: e6535bee965c5a84c7e0256085c4516478284688
+  EasyLua: 6ef0069e59f36d309c13df523b337c8455360c62
   Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
   lua: f5dfecaee3325734ef8dd47ec238797ed28b4bf5
-  Specta: a353759f073ffcc0a365b782fe4aaeac064c03c6
+  Specta: eb90708ed77569bbda089f8ead10bb99b8e9489e
 
 COCOAPODS: 0.35.0
