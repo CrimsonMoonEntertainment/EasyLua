@@ -101,6 +101,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
                                 // so it will be in the right place in the stack
     lua_getglobal(L, [functionName UTF8String]);
     
+    if(lua_type(L, -1) != LUA_TFUNCTION)
+    {
+        NSLog(@"Attempted to call non-existing lua function %@", functionName);
+        lua_pop(L, 2);
+        return nil;
+    }
+    
+    
     for(id item in arguments)
     {
 	    to_lua(L, item, true);
