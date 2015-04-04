@@ -8,6 +8,7 @@
 #import "CMSynthesizeSingleton.h"
 #import "LuaBridgedFunctions.h"
 #import "EasyLua.h"
+#import "RegExCategories.h"
 
 #define ADDMETHOD(name) \
 (lua_pushstring(L, #name), \
@@ -158,10 +159,66 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(EasyLua)
 #pragma mark - Private
 #pragma mark - Objective-C Loading Translation
 
-+ (NSString*)decodeObjectiveC:(NSString*)codeIn
++ (NSString *)decodeObjectiveCFile:(NSString*)fileContent
 {
+    bool had_error = false;
     
+    NSMutableArray* allLinedStrings =  [[fileContent componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] mutableCopy];
+    NSMutableString* new_file = [[NSMutableString alloc] initWithCapacity:1000];
+    for(int i = 0; i < [allLinedStrings count]; i++)
+    {
+        [new_file appendString:[EasyLua decodeObjectiveCLine:allLinedStrings[i] hadError:&had_error]];
+        [new_file appendString:@"\n"];
+        
+        if(had_error == true)
+        {
+            return fileContent; // return unchanged
+        }
+        
+    }
+    return new_file;
+}
+
+
++ (NSString *)decodeObjectiveCLine:(NSString*)codeIn hadError:(bool *)hadError
+{
+    NSString* abort_string = @"An error occurred when converting from Obj-C context! Aborting.
+    NSString* inner_most_method_call = @"(.*)(\\[)([^\\[\\]]*)(\\])(.*)";
+    NSString* is_an_array_index = @"^\\s*\\w*\\s*$";
+    NSString* seperate_object_and_call = @"^\\s*(\\w+)\\s+(.*)";
+    NSString* left_brace_placeholder = @"^^^^^";
+    NSString* right_brace_placeholder = @"$$$$$";
     
+    RxMatch* match = [codeIn firstMatchWithDetails:RX(inner_most_method_call)];
+    while (match != nil)
+    {
+        RxMatchGroup* method_body = match.groups[2];
+        NSString* method_string = method_body.value;
+        
+        // First, check if its an array, not a method
+        if([method_string isMatch:RX(is_an_array_index)] == true)
+        {
+            // Replace braces with placeholder
+            codeIn = [codeIn stringByReplacingCharactersInRange:((RxMatchGroup*)match.groups[3]).range withString:right_brace_placeholder];
+            codeIn = [codeIn stringByReplacingCharactersInRange:((RxMatchGroup*)match.groups[1]).range withString:left_brace_placeholder];
+            match = [codeIn firstMatchWithDetails:RX(inner_most_method_call)];
+            continue;
+        }
+        
+        // We now know its a method
+        RxMatch* inner_match = [method_string firstMatchWithDetails:RX(seperate_object_and_call)];
+        if(inner_match == nil)
+        {
+            *hadError = true;
+            return @"";    // Something went wrong
+        }
+        
+        NSString* object_name = ((RxMatchGroup*)inner_match.groups[0]).value
+            
+            
+        
+        match = [codeIn firstMatchWithDetails:RX(inner_most_method_call)];
+    }
     return nil;
 }
 
