@@ -34,8 +34,6 @@ Currently, calling a method such as this will fail:
 
 This is because strings are converted into lua strings right away, so when you all init, it does not know what to do. This can be fixed in the future but should generally not be needed as you can simply use lua string.
 
-Additionally, having more than one Lua environment is not supported.
-
 
 License
 =======
