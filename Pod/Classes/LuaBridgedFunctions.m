@@ -96,6 +96,76 @@ id from_lua(lua_State *L, int i)
         }
             break;
         case LUA_TTABLE:
+            
+
+            lua_pushvalue(L, i);
+            lua_pushnil(L);
+            
+            bool is_dictionary = false;
+            while (lua_next(L, -2))
+            {
+                if(lua_type(L, -2) != LUA_TNUMBER)
+                {
+                    is_dictionary = true;
+                    lua_pop(L, 2);
+                    break;
+                }
+                else
+                {
+                    lua_pop(L, 1);
+                }
+            }
+            
+            if (is_dictionary == true)
+            {
+                NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+                lua_pushnil(L);
+                
+                while (lua_next(L, -2))
+                {
+                    id key = from_lua(L, -2);
+                    id val = from_lua(L, -1);
+                    lua_pop(L, 1);
+                    
+                    if (key == nil)
+                    {
+                        continue;
+                    }
+                    if (val == nil)
+                    {
+                        val = [NSNull null];
+                    }
+                    
+                    dict[key] = val;
+                }
+                lua_pop(L, 1);
+                return dict;
+            }
+            else
+            {
+                // must be an array
+                NSMutableArray* array = [NSMutableArray array];
+                lua_pushnil(L);
+                
+                while (lua_next(L, -2))
+                {
+                    int current_index = lua_tonumber(L, -2) - 1;
+                    id val = from_lua(L, -1);
+                    lua_pop(L, 1);
+                    
+                    if (val == nil)
+                    {
+                        val = [NSNull null];
+                    }
+                    
+                    array[current_index] = val;
+                }
+                lua_pop(L, 1);
+                return array;
+            }
+            
+            
+            
         case LUA_TFUNCTION:
         case LUA_TTHREAD:
         case LUA_TNONE:

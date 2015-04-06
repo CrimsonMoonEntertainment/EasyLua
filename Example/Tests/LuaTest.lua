@@ -3,6 +3,19 @@
 my_object = ObjCTest("alloc")("init")
 
 
+function TestDict( dictIN )
+    local my_table = {}
+    my_table['TestKey'] = dictIN['TestKey']
+    return my_table
+end
+
+function TestArray(val)
+    local my_table = {}
+    my_table[1] = val('objectAtIndex:', 0)
+    my_table[2] = val('objectAtIndex:', 1)
+    return my_table
+end
+
 function SetTestValue(val)
     ObjCTest("setLastTestState:", val)
 end
@@ -34,8 +47,6 @@ end
 
 function TestNSDictionay(dict)
 
-    print ('Test Started')
-    print(dict['TestKey'])
     if dict['TestKey'] == 'TestValue' then
         SetTestValue(true)
     else
@@ -43,7 +54,6 @@ function TestNSDictionay(dict)
     end
 
     new_dict = NSMutableDictionary('alloc')('init')
-    print('Almost Done')
     new_dict['ReturnKey'] = 'ReturnValue'
     return new_dict
 end

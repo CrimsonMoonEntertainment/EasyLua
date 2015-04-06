@@ -23,6 +23,8 @@ Dictionaries can also be used similar to how they are used in Objective-C:
     new_dict = NSMutableDictionary('alloc')('init')
     new_dict['ReturnKey'] = 'ReturnValue'
 
+Additionally, tables will be converted into either NSArrays or NSDictionaries when returned or called as parameters to an Objective-C method.
+
 
 EasyLua was originally derived from Lua-Objective-C Bridge. Special thanks to the original author Toru Hisai!
 

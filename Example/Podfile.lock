@@ -1,5 +1,5 @@
 PODS:
-  - EasyLua (1.1.1):
+  - EasyLua (1.1.2):
     - lua (~> 5.2)
   - Expecta (0.3.2)
   - lua (5.2.3)
@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  EasyLua: 014ac01ffc894408a55b0dfe261e1708150c8dd0
+  EasyLua: d4ff0a517fd205c0de018cb81dc6693ab4bddcf3
   Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
   lua: f5dfecaee3325734ef8dd47ec238797ed28b4bf5
   Specta: eb90708ed77569bbda089f8ead10bb99b8e9489e

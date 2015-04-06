@@ -22,6 +22,23 @@ describe(@"EasyLua Tests", ^{
     });
     
     
+    it(@"can return table array", ^{
+        NSArray* val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestArray" withArguments:@[@[@"one", @"two"]]];
+        expect([val[0] isEqualToString:@"one"]).equal(true);
+        expect([val[1] isEqualToString:@"two"]).equal(true);
+        [NSDictionary class];
+        
+    });
+    
+    it(@"can return table dictionary", ^{
+        NSDictionary* val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestDict" withArguments:@[@{@"TestKey": @"TestVal"}]];
+        expect([val[@"TestKey"] isEqualToString:@"TestVal"]).equal(true);
+        
+    });
+
+
+
+    
     it(@"can run string", ^{
         [ObjCTest setLastTestState:false];
         [[EasyLua sharedEasyLua] runLuaString:@"SetTestValue(true)"];
