@@ -35,7 +35,7 @@ function wrap(obj)
                                 end
                              end,
                     __index = function(inObject, inKey)
-                                local ret = sendMesg(inObject["WrappedObject"], 'objectForKey:', inKey)
+                                local ret = sendMesg(inObject["WrappedObject"], 'valueForKey:', inKey)
                                 if type(ret) == "userdata" then
                                    return wrap(ret)
                                 else
@@ -43,7 +43,7 @@ function wrap(obj)
                                 end
                               end,
                     __newindex =  function(inObject, inKey, inValue)
-                                    sendMesg(inObject["WrappedObject"], 'setObject:forKey:', inValue, inKey)
+                                    sendMesg(inObject["WrappedObject"], 'setValue:forKey:', inValue, inKey)
                                   end
 
 
