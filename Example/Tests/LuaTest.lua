@@ -58,6 +58,12 @@ function TestNSDictionay(dict)
     return new_dict
 end
 
+
+function TestKeyPaths(dict)
+    return dict['TestKey1.TestKey2']
+end
+
+
 function TestObjects(val)
     val("instanceSetLastTestState:", true)    
     return val

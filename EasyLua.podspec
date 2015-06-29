@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "EasyLua"
-  s.version          = "1.2.1"
+  s.version          = "1.2.2"
   s.summary          = "An easy to use library for integrating Lua with Objective-c on iOS."
   s.description      = <<-DESC
                         EasyLua is lightweight, easy to integrate, and easy to use library for bridging Obj-C and Lua.

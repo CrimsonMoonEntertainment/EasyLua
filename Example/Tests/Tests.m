@@ -101,6 +101,12 @@ describe(@"EasyLua Tests", ^{
         expect([data[@"ReturnKey"] isEqualToString:@"ReturnValue"]).equal(true);
     });
     
+    it(@"can handle key paths", ^{
+        NSDictionary* data_in = @{@"TestKey1":@{@"TestKey2":@"TestValue"}};
+        NSString* inner_value = [[EasyLua sharedEasyLua] callLuaFunction:@"TestKeyPaths" withArguments:@[data_in]];
+        expect([inner_value isEqualToString:@"TestValue"]).equal(true);
+    });
+    
     it(@"We can call into Lua", ^{
 
         id v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestVoidFunction" withArguments:@[@"TestString", @124.2, [NSNumber numberWithBool:true]]];
