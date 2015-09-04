@@ -11,7 +11,7 @@
 #import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIGeometry.h>
-
+#import <GLKit/GLKit.h>
 #define CNVBUF(type) type x = *(type*)buffer
 
 
@@ -43,6 +43,14 @@ bool to_lua(lua_State *L, id obj, bool dowrap)
     {
         lua_pushnil(L);
     }
+    else if([obj isKindOfClass:[NSValue class]])
+    {
+        if (strcmp ([obj objCType], @encode(GLKVector3)) == 0)
+        {
+            
+        }
+    }
+    
     else
     {
         // We need to wrap this value before pushing
@@ -353,6 +361,18 @@ int luafunc_call(lua_State *L)
                     CGAffineTransform tran = [(NSValue *)arg CGAffineTransformValue];
                     [inv setArgument:&tran atIndex:i];
                 }
+                else if ([t_str hasPrefix:@"{GLKVector3"])
+                {
+                    GLKVector3 vector;
+                    [(NSValue *)arg getValue:&vector];
+                    [inv setArgument:&vector atIndex:i];
+                }
+                else if ([t_str hasPrefix:@"{GLKVector4"])
+                {
+                    GLKVector4 vector;
+                    [(NSValue *)arg getValue:&vector];
+                    [inv setArgument:&vector atIndex:i];
+                }
             }
                 break;
                 
@@ -518,6 +538,16 @@ int luafunc_call(lua_State *L)
             {
                 CGAffineTransform *tran = (CGAffineTransform *)buffer;
                 [stack addObject:[NSValue valueWithCGAffineTransform:*tran]];
+            }
+            else if ([t hasPrefix:@"{GLKVector4"])
+            {
+                GLKVector4 *vec = (GLKVector4 *)buffer;
+                [stack addObject:[NSValue valueWithBytes:vec objCType:@encode(GLKVector4)]];
+            }
+            else if ([t hasPrefix:@"{GLKVector3"])
+            {
+                GLKVector4 *vec = (GLKVector4 *)buffer;
+                [stack addObject:[NSValue valueWithBytes:vec objCType:@encode(GLKVector3)]];
             }
         }
             break;
