@@ -8,6 +8,7 @@
 
 #import "EasyLua.h"
 #import "ObjCTest.h"
+#import <GLKit/GLKit.h>
 
 SpecBegin(EasyLua)
 
@@ -119,6 +120,42 @@ describe(@"EasyLua Tests", ^{
         expect([b_val boolValue]).to.equal(true);
         expect([s_val isEqualToString:@"TestString"]).equal(true);
     });
+    
+    
+    it(@"We can give Lua a Vector", ^{
+        
+        ObjCTest* tester = [[ObjCTest alloc] init];
+        NSValue* v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestVector3ReadAndWrite" withArguments:@[tester]];
+        GLKVector3 t3;
+        
+        [v_val getValue:&t3];
+        
+        NSLog(@"T3 Value: X:%f", t3.x);
+        
+        expect(t3.x).equal(5.0f);
+        expect(t3.y).equal(6.0f);
+        expect(t3.z).equal(7.0f);
+        
+        v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestVector4ReadAndWrite" withArguments:@[tester]];
+        
+        GLKVector4 t4;
+        [v_val getValue:&t4];
+        
+        expect(t4.x).equal(1.0f);
+        expect(t4.y).equal(2.0f);
+        expect(t4.z).equal(3.0f);
+        expect(t4.a).equal(4.0f);
+        
+        
+        
+       // v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestVectorCreate" withArguments:@[tester]];
+       
+                                      
+                               // expect(v_val).equal(nil);
+
+    });
+    
+    
     
 });
 

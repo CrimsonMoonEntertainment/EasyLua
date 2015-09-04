@@ -23,10 +23,12 @@ bool to_lua(lua_State *L, id obj, bool dowrap)
     if (obj == nil)
     {
         lua_pushnil(L);
+        return true;
     }
     else if ([obj isKindOfClass:[NSString class]])
     {
         lua_pushstring(L, [obj cStringUsingEncoding:NSUTF8StringEncoding]);
+        return true;
     }
     else if ([obj isKindOfClass:[NSNumber class]])
     {
@@ -38,39 +40,77 @@ bool to_lua(lua_State *L, id obj, bool dowrap)
         {
             lua_pushnumber(L, [obj doubleValue]);
         }
+        return true;
     }
     else if ([obj isKindOfClass:[NSNull class]])
     {
         lua_pushnil(L);
+        return true;
     }
     else if([obj isKindOfClass:[NSValue class]])
     {
         if (strcmp ([obj objCType], @encode(GLKVector3)) == 0)
         {
-            
+            GLKVector3 value;
+            [obj getValue:&value];
+            lua_newtable(L);
+            lua_pushstring(L, "x");
+            lua_pushnumber(L, value.x);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "y");
+            lua_pushnumber(L, value.y);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "z");
+            lua_pushnumber(L, value.z);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "objc-type");
+            lua_pushstring(L, "GLKVector3");
+            lua_rawset(L, -3);
+            return true;
         }
+        if (strcmp ([obj objCType], @encode(GLKVector4)) == 0)
+        {
+            GLKVector4 value;
+            [obj getValue:&value];
+            lua_newtable(L);
+            lua_pushstring(L, "r");
+            lua_pushnumber(L, value.r);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "g");
+            lua_pushnumber(L, value.g);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "b");
+            lua_pushnumber(L, value.b);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "a");
+            lua_pushnumber(L, value.a);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "objc-type");
+            lua_pushstring(L, "GLKVector4");
+            lua_rawset(L, -3);
+            return true;
+        }
+    }
+    
+
+    // We need to wrap this value before pushing
+    if(dowrap)
+    {
+        lua_getglobal(L, "wrap");
+        lua_pushlightuserdata(L, (__bridge void*)obj);
+        if(lua_pcall(L, 1, 1, 0) != LUA_OK)
+        {
+            NSLog(@"Error running specified lua function wrap");
+        }
+        
+        // We don't pop the data! We simply leave it there for the function to read as its param
     }
     
     else
     {
-        // We need to wrap this value before pushing
-        if(dowrap)
-        {
-            lua_getglobal(L, "wrap");
-            lua_pushlightuserdata(L, (__bridge void*)obj);
-            if(lua_pcall(L, 1, 1, 0) != LUA_OK)
-            {
-                NSLog(@"Error running specified lua function wrap");
-            }
-            
-            // We don't pop the data! We simply leave it there for the function to read as its param
-        }
-        
-        else
-        {
-            lua_pushlightuserdata(L, (__bridge void*)obj);
-        }
+        lua_pushlightuserdata(L, (__bridge void*)obj);
     }
+    
 
 	return true;
 }
@@ -147,6 +187,29 @@ id from_lua(lua_State *L, int i)
                     dict[key] = val;
                 }
                 lua_pop(L, 1);
+                
+                NSString* objc_type = dict[@"objc-type"];
+                if(objc_type != nil)
+                {
+                    if([objc_type isEqualToString:@"GLKVector3"])
+                    {
+                        GLKVector3 vector;
+                        vector.x = [dict[@"x"] floatValue];
+                        vector.y = [dict[@"y"] floatValue];
+                        vector.z = [dict[@"z"] floatValue];
+                        return [NSValue valueWithBytes:&vector objCType:@encode(GLKVector3)];
+                    }
+                    else if([objc_type isEqualToString:@"GLKVector4"])
+                    {
+                        GLKVector4 vector;
+                        vector.r = [dict[@"r"] floatValue];
+                        vector.g = [dict[@"g"] floatValue];
+                        vector.b = [dict[@"b"] floatValue];
+                        vector.a = [dict[@"a"] floatValue];
+                        return [NSValue valueWithBytes:&vector objCType:@encode(GLKVector4)];
+                    }
+                }
+                
                 return dict;
             }
             else
@@ -376,6 +439,25 @@ int luafunc_call(lua_State *L)
             }
                 break;
                 
+                
+            case '(':
+            {
+                NSString *t_str = [NSString stringWithUTF8String:t];
+                if ([t_str hasPrefix:@"(GLKVector3"])
+                {
+                    GLKVector3 vector;
+                    [(NSValue *)arg getValue:&vector];
+                    [inv setArgument:&vector atIndex:i];
+                }
+                else if ([t_str hasPrefix:@"(GLKVector4"])
+                {
+                    GLKVector4 vector;
+                    [(NSValue *)arg getValue:&vector];
+                    [inv setArgument:&vector atIndex:i];
+                }
+            }
+            break;
+                
             case 'v': // A void
             case '#': // A class object (Class)
             case ':': // A method selector (SEL)
@@ -550,7 +632,26 @@ int luafunc_call(lua_State *L)
                 [stack addObject:[NSValue valueWithBytes:vec objCType:@encode(GLKVector3)]];
             }
         }
+        break;
+        
+        case '(':
+        {
+            NSString *t = [NSString stringWithUTF8String:rettype];
+            if ([t hasPrefix:@"(GLKVector4"])
+            {
+                GLKVector4 *vec = (GLKVector4 *)buffer;
+                [stack addObject:[NSValue valueWithBytes:vec objCType:@encode(GLKVector4)]];
+            }
+            if ([t hasPrefix:@"(GLKVector3"])
+            {
+                GLKVector4 *vec = (GLKVector4 *)buffer;
+                [stack addObject:[NSValue valueWithBytes:vec objCType:@encode(GLKVector3)]];
+            }
+            
+            
+        }
             break;
+            
             
         case '#': // A class object (Class)
         case ':': // A method selector (SEL)

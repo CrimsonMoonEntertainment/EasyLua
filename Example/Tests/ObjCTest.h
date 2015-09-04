@@ -7,8 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
+#import "CMBase.h"
 
-@interface ObjCTest : NSObject
+@interface ObjCTest : CMBase
+
+@property GLKVector3 Vector3;
+@property GLKVector4 Vector4;
 
 + (bool)getLastTestState;
 + (void)setLastTestState:(bool)testState;

@@ -58,6 +58,17 @@ static bool LastTestState = false;
     NSLog(@"My String: %@", stringIn);
 }
 
+-(id)init
+{
+    if(self = [super init])
+    {
+        self.Vector4 = GLKVector4Make(1.0, 2.0, 3.0, 4.0);
+        self.Vector3 = GLKVector3Make(5.0, 6.0, 7.0);
+    }
+    
+    return self;
+}
+
 - (NSNumber*)memberMethodWithNumber:(NSNumber*)number
 {
     int val = [number intValue];

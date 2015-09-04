@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		120B0F141B9A333200583669 /* CMBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 120B0F131B9A333200583669 /* CMBase.m */; };
 		12E9C7521ACB2644000EAA0B /* LuaTest.lua in Resources */ = {isa = PBXBuildFile; fileRef = 12E9C7511ACB2644000EAA0B /* LuaTest.lua */; };
 		12E9C7551ACB2681000EAA0B /* ObjCTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 12E9C7541ACB2681000EAA0B /* ObjCTest.m */; };
 		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
@@ -18,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		120B0F121B9A333200583669 /* CMBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMBase.h; sourceTree = "<group>"; };
+		120B0F131B9A333200583669 /* CMBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMBase.m; sourceTree = "<group>"; };
 		12E9C7511ACB2644000EAA0B /* LuaTest.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LuaTest.lua; sourceTree = "<group>"; };
 		12E9C7531ACB2681000EAA0B /* ObjCTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjCTest.h; sourceTree = "<group>"; };
 		12E9C7541ACB2681000EAA0B /* ObjCTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjCTest.m; sourceTree = "<group>"; };
@@ -90,6 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				6003F5BB195388D20070C39A /* Tests.m */,
+				120B0F121B9A333200583669 /* CMBase.h */,
+				120B0F131B9A333200583669 /* CMBase.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
 				12E9C7511ACB2644000EAA0B /* LuaTest.lua */,
 				12E9C7531ACB2681000EAA0B /* ObjCTest.h */,
@@ -233,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* Tests.m in Sources */,
+				120B0F141B9A333200583669 /* CMBase.m in Sources */,
 				12E9C7551ACB2681000EAA0B /* ObjCTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

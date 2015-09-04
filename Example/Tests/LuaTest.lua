@@ -148,3 +148,13 @@ function TestStringFunction(in_string, in_number, in_bool)
     return in_string
 end
 
+
+function TestVector3ReadAndWrite(in_obj)
+    return in_obj.Vector3
+end
+
+function TestVector4ReadAndWrite(in_obj)
+    return in_obj.Vector4
+end
+
+
