@@ -148,10 +148,22 @@ describe(@"EasyLua Tests", ^{
         
         
         
-       // v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestVectorCreate" withArguments:@[tester]];
-       
-                                      
-                               // expect(v_val).equal(nil);
+        v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestReturnAndParamVec3" withArguments:@[tester]];
+        [v_val getValue:&t3];
+        expect(t3.x).equal(15.0f);
+        expect(t3.y).equal(20.0f);
+        expect(t3.z).equal(30.0f);
+        
+
+        
+        v_val = [[EasyLua sharedEasyLua] callLuaFunction:@"TestReturnAndParamVec4" withArguments:@[tester]];
+        [v_val getValue:&t4];
+        
+        expect(t4.x).equal(15.0f);
+        expect(t4.y).equal(20.0f);
+        expect(t4.z).equal(30.0f);
+        expect(t4.a).equal(40.0f);
+        
 
     });
     

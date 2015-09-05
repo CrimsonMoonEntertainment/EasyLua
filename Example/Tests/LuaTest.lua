@@ -158,3 +158,34 @@ function TestVector4ReadAndWrite(in_obj)
 end
 
 
+function TestReturnAndParamVec3(in_obj)
+    local my_table = {}
+    my_table['objc-type'] = 'GLKVector3'
+    my_table['x'] = 15
+    my_table['y'] = 20
+    my_table['z'] = 30
+
+    in_obj.Vector3 = my_table
+
+    new_vector = in_obj.Vector3
+
+    return new_vector
+end
+
+
+function TestReturnAndParamVec4(in_obj)
+    local my_table = {}
+    my_table['objc-type'] = 'GLKVector4'
+    my_table['r'] = 15
+    my_table['g'] = 20
+    my_table['b'] = 30
+    my_table['a'] = 40
+
+    in_obj.Vector4 = my_table
+    new_vector = in_obj.Vector4
+
+    return new_vector
+end
+
+
+

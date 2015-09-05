@@ -93,4 +93,18 @@ static bool LastTestState = false;
     return value1In * 2 + value2In;
 }
 
+- (GLKVector4)changeVector4:(GLKVector4)vecIn
+{
+    vecIn.x = 15.0f;
+    return vecIn;
+}
+
+- (GLKVector3)changeVector3:(GLKVector3)vecIn;
+{
+    vecIn.x = 15.0f;
+    return vecIn;
+}
+
+
+
 @end
