@@ -49,7 +49,7 @@ bool to_lua(lua_State *L, id obj, bool dowrap)
     }
     else if([obj isKindOfClass:[NSValue class]])
     {
-        if (strcmp ([obj objCType], @encode(GLKVector3)) == 0)
+        if (strncmp ([obj objCType], @encode(GLKVector3), 13) == 0)
         {
             GLKVector3 value;
             [obj getValue:&value];
@@ -68,7 +68,7 @@ bool to_lua(lua_State *L, id obj, bool dowrap)
             lua_rawset(L, -3);
             return true;
         }
-        if (strcmp ([obj objCType], @encode(GLKVector4)) == 0)
+        if (strncmp ([obj objCType], @encode(GLKVector4), 13) == 0)
         {
             GLKVector4 value;
             [obj getValue:&value];
